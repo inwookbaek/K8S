@@ -527,10 +527,3 @@ kubectl expose pod nginx --port=80 --target-port=80 --name=nginx-service --dry-r
 | `> file.yaml`      | 출력 결과를 파일로 저장              |
 
 
-echo "# K8S" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/inwookbaek/K8S.git
-git push -u origin main
