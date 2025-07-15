@@ -378,12 +378,17 @@ spec:
 kubectl apply -f limits.yaml
 # pod/limits created
 
+
 watch kubectl get pod limits
 # NAME    READY   STATUS     RESTARTS   AGE
 # limits  1/1     Running    0          1m
 # ...
 # limits  0/1     OOMKilled  1          1m
 ```
+
+
+
+
 
 ```yaml
 # resources.yaml
