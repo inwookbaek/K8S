@@ -111,8 +111,6 @@ cat ~/.ssh/id_rsa.pub | ssh ubuntu@work1_ip "mkdir -p ~/.ssh && cat >> ~/.ssh/au
 # 각 Work 서버에 대해 반복합니다.
 ```
 
-
-
 #### 3. Master → Worker SSH 접속 테스트
 ```bash
 ssh ubuntu@work1_ip

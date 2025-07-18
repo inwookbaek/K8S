@@ -296,6 +296,7 @@ kubectl get pod
 정리
 kubectl delete deploy --all
 ```
+
 ## 7.4 StatefulSet
 
 ```yaml
