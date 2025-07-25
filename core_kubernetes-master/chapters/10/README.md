@@ -306,7 +306,7 @@ helm install nfs stable/nfs-server-provisioner \
 # ...
 
 # nfs-server-provisioner라는 Pod가 생성되어 있습니다.
-kubectl get pod -n ctrl
+ㅊ
 # NAME                           READY   STATUS       RESTARTS   AGE
 # ...
 # nfs-nfs-server-provisioner-0   1/1     Running      0          4m
