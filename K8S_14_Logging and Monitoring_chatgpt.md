@@ -212,129 +212,63 @@ helm upgrade --install elasticsearch elastic/elasticsearch \
 
 
 kubectl get all -n logging 
-kubectl delete ns logging
 helm repo update
-kubectl create ns logging
 
+helm uninstall kibana -n logging || true
+helm uninstall elasticsearch -n logging || true
+kubectl delete namespace logging --wait || true
 
+kubectl create namespace logging
 
 helm install elasticsearch elastic/elasticsearch \
   --namespace logging \
   --set replicas=1 \
   --set minimumMasterNodes=1 \
-  --set volumeClaimTemplate.resources.requests.storage=5Gi \
-  --set resources.requests.cpu=100m \
-  --set resources.requests.memory=512Mi \
-  --set resources.limits.memory=1Gi \
   --set tls.enabled=true \
   --set tls.selfSigned=true \
   --set tls.createCert=true \
-  --set tls.san="{elasticsearch-master,elasticsearch-master.logging,elasticsearch-master.logging.svc,elasticsearch-master.logging.svc.cluster.local}"
-
-
-
-helm install kibana elastic/kibana \
-  --namespace logging \
-  --set elasticsearchHosts=https://elasticsearch-master.logging.svc.cluster.local:9200 \
-  --set elasticsearchUsername=elastic \
-  --set elasticsearchPassword=$(kubectl get secret elasticsearch-master-credentials -n logging -o jsonpath='{.data.password}' | base64 -d) \
-  --set elasticsearch.ssl.verificationMode=none \
-  --set service.type=NodePort \
-  --set server.publicBaseUrl="http://192.168.164.130:32159" \
-  --timeout 10m
+  --set tls.san[0]=elasticsearch-master \
+  --set tls.san[1]=elasticsearch-master.logging \
+  --set tls.san[2]=elasticsearch-master.logging.svc \
+  --set tls.san[3]=elasticsearch-master.logging.svc.cluster.local \
+  --set volumeClaimTemplate.resources.requests.storage=5Gi \
+  --set resources.requests.cpu=100m \
+  --set resources.requests.memory=512Mi \
+  --set resources.limits.memory=1Gi
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-helm install kibana elastic/kibana \
-  --namespace logging \
-  --set elasticsearchURL=https://elasticsearch-master.logging.svc.cluster.local:9200 \
-  --set elasticsearchUsername=elastic \
-  --set elasticsearchPassword=79dcssaXr8wwaiCh
-  --set service.type=NodePort
-  
+kubectl get pod -l app=elasticsearch-master -n logging
+# ready 상태가 1/1, status가 running 확인 후 kibana설치 진행
+# NAME                     READY   STATUS    RESTARTS   AGE
+# elasticsearch-master-0   1/1     Running   0          2m
 
 
 helm upgrade --install kibana elastic/kibana \
   --namespace logging \
   --set elasticsearchHosts=https://elasticsearch-master.logging.svc.cluster.local:9200 \
   --set elasticsearchUsername=elastic \
-  --set elasticsearchPassword=79dcssaXr8wwaiCh \
+  --set elasticsearchPassword=$(kubectl get secret elasticsearch-master-credentials -n logging -o jsonpath='{.data.password}' | base64 -d) \
+  --set elasticsearch.ssl.verificationMode=none \
+  --set elasticsearch.ssl.certificateAuthorities="" \
   --set service.type=NodePort \
-  --set server.publicBaseUrl="http://192.168.164.130:30896" \
+  --set service.nodePort=32159 \
+  --set server.publicBaseUrl="http://192.168.164.130:32159" \
   --timeout 10m
 
 
 
 
+kubectl get svc -n logging | grep kibana
+kubectl get pod -n logging -l app.kubernetes.io/name=kibana
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-helm install elasticsearch elastic/elasticsearch -n logging \
-  --set replicas=1 \
-  --set minimumMasterNodes=1 \
-  --set volumeClaimTemplate.resources.requests.storage=5Gi \
-  --set resources.requests.cpu=100m \
-  --set resources.requests.memory=512Mi \
-  --set resources.limits.memory=1Gi
-
-helm upgrade --install elasticsearch elastic/elasticsearch \
-  --namespace logging \
-  --set tls.enabled=true \
-  --set tls.selfSigned=true \
-  --set tls.san="{elasticsearch-master,elasticsearch-master.logging,elasticsearch-master.logging.svc,elasticsearch-master.logging.svc.cluster.local}" \
-  --set tls.createCert=true \
-  --reuse-values
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+kubectl logs pod/pre-install-kibana-kibana-wrl79   -n logging
 
 
 
